@@ -25,8 +25,8 @@
         gap: 20px;
       }
       .main-content {
+        max-width: 100%;
         flex: 1;
-        min-width: 300px; /* 모바일에서도 최소 크기 유지 */
       }
       .sidebar {
         width: 100%;
@@ -53,6 +53,8 @@
         line-height: 1.4;
         border-radius: 4px;
         margin-bottom: 4px;
+        word-wrap: break-word; /* 긴 단어를 줄바꿈 */
+        white-space: normal;    /* 줄바꿈 허용 */
       }
       #messages li.my-message {
         background: #f1f1f1;
