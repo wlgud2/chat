@@ -75,7 +75,13 @@
         const myNicknameDiv = document.getElementById('myNickname');
         let myNickname = '';
 
+        // 소켓 연결 시 닉네임 설정
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+
         socket.on('set nickname', (nickname) => {
+            console.log('Received nickname:', nickname);
             myNickname = nickname;
             myNicknameDiv.textContent = `닉네임: ${nickname}`;
         });
