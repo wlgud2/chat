@@ -253,7 +253,10 @@
 
         const timestampSpan = document.createElement('span');
         timestampSpan.className = 'timestamp';
-        timestampSpan.textContent = data.timestamp;
+        const timestamp = new Date().toLocaleTimeString('ko-KR', {
+          timeZone: 'Asia/Seoul', // 서울 시간대로 설정
+        });
+        timestampSpan.textContent = timestamp;
 
         const messageSpan = document.createElement('span');
         messageSpan.textContent = data.message;
