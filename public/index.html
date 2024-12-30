@@ -1,31 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
   <head>
-    <title>익명 채팅방</title>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>익명 채팅방</title>
     <style>
+      #input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px; /* 기본 폰트 크기 지정 */
+        -webkit-appearance: none; /* iOS에서의 확대 방지 */
+        -moz-appearance: none; /* Firefox에서의 확대 방지 */
+        appearance: none; /* 기본 크기로 유지 */
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
         padding: 20px;
         font-family: Arial, sans-serif;
         display: flex;
+        flex-wrap: wrap;
         gap: 20px;
       }
       .main-content {
         flex: 1;
+        min-width: 300px; /* 모바일에서도 최소 크기 유지 */
       }
       .sidebar {
-        width: 200px;
+        width: 100%;
+        max-width: 300px;
         background: #f8f9fa;
         padding: 15px;
         border-radius: 8px;
         border: 1px solid #ddd;
+        box-sizing: border-box;
       }
       #messages {
         list-style-type: none;
         margin: 0;
         padding: 0;
-        height: 400px;
+        height: 200px;
         overflow-y: auto;
         border: 1px solid #ccc;
         margin-bottom: 20px;
@@ -112,6 +128,37 @@
       #userList li.current-user {
         font-weight: bold;
         background: #e6f3ff;
+      }
+
+      /* 반응형 디자인 */
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column;
+          padding: 10px;
+        }
+        .sidebar {
+          width: 100%;
+          max-width: none;
+          margin-top: 20px;
+        }
+        .main-content {
+          margin-bottom: 20px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        #messages {
+          height: 150px;
+        }
+        #form {
+          flex-direction: column;
+        }
+        #input {
+          margin-bottom: 10px;
+        }
+        button {
+          width: 100%;
+        }
       }
     </style>
   </head>
