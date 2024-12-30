@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>익명 채팅방</title>
+    <meta charset="utf-8">
+    <style>
+        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+        #messages { 
+            list-style-type: none; 
+            margin: 0; 
+            padding: 0; 
+            height: 400px; 
+            overflow-y: auto; 
+            border: 1px solid #ccc; 
+            margin-bottom: 20px; 
+            padding: 10px;
+        }
+        #messages li { 
+            padding: 8px 10px; 
+            line-height: 1.4;
+        }
+        #messages li:nth-child(odd) { background: #f1f1f1; }
+        .nickname {
+            color: #0066cc;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 0.8em;
+            margin-right: 8px;
+        }
+        #form { 
+            display: flex; 
+            gap: 10px;
+        }
+        #input { 
+            flex-grow: 1; 
+            padding: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #0084ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #userCount {
+            margin-bottom: 10px;
+            color: #666;
+        }
+        #myNickname {
+            margin-bottom: 10px;
+            color: #0066cc;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="userCount">접속자 수: 0</div>
+    <div id="myNickname">닉네임: 연결 중...</div>
+    <ul id="messages"></ul>
+    <form id="form">
+        <input id="input" autocomplete="off" placeholder="메시지를 입력하세요..." />
+        <button>보내기</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+        const userCountDiv = document.getElementById('userCount');
+        const myNicknameDiv = document.getElementById('myNickname');
+        let myNickname = '';
+
+        socket.on('set nickname', (nickname) => {
+            myNickname = nickname;
+            myNicknameDiv.textContent = `닉네임: ${nickname}`;
+        });
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', input.value);
+                input.value = '';
+            }
+        });
+
+        socket.on('chat message', (data) => {
+            const li = document.createElement('li');
+            const nicknameSpan = document.createElement('span');
+            nicknameSpan.className = 'nickname';
+            nicknameSpan.textContent = data.nickname;
+            
+            const timestampSpan = document.createElement('span');
+            timestampSpan.className = 'timestamp';
+            timestampSpan.textContent = data.timestamp;
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.textContent = data.message;
+            
+            li.appendChild(timestampSpan);
+            li.appendChild(nicknameSpan);
+            li.appendChild(messageSpan);
+            
+            messages.appendChild(li);
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        socket.on('userCount', (count) => {
+            userCountDiv.textContent = `접속자 수: ${count}`;
+        });
+    </script>
+</body>
+</html>
