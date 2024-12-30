@@ -193,12 +193,12 @@
       let myNickname = '';
 
       // 로컬 스토리지에서 userId 및 nickname 가져오기
-      let userId = localStorage.getItem('userId');
-      let nickname = localStorage.getItem('nickname');
+      let userId = sessionStorage.getItem('userId');
+      let nickname = sessionStorage.getItem('nickname');
 
       if (!userId) {
         userId = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
-        localStorage.setItem('userId', userId);
+        sessionStorage.setItem('userId', userId);
       }
 
       // 서버에 userId와 닉네임 전송
@@ -214,7 +214,7 @@
         myNickname = receivedNickname;
         myNicknameDiv.textContent = `닉네임: ${myNickname}`;
         if (!nickname) {
-          localStorage.setItem('nickname', myNickname);
+          sessionStorage.setItem('nickname', myNickname);
         }
       });
 
