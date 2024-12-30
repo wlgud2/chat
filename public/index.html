@@ -1,204 +1,228 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>익명 채팅방</title>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <style>
-        body { 
-            margin: 0; 
-            padding: 20px; 
-            font-family: Arial, sans-serif;
-            display: flex;
-            gap: 20px;
-        }
-        .main-content {
-            flex: 1;
-        }
-        .sidebar {
-            width: 200px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        #messages { 
-            list-style-type: none; 
-            margin: 0; 
-            padding: 0; 
-            height: 400px; 
-            overflow-y: auto; 
-            border: 1px solid #ccc; 
-            margin-bottom: 20px; 
-            padding: 10px;
-            border-radius: 8px;
-        }
-        #messages li { 
-            padding: 8px 10px; 
-            line-height: 1.4;
-            border-radius: 4px;
-            margin-bottom: 4px;
-        }
-        #messages li.my-message {
-            background: #f1f1f1;
-        }
-        .nickname {
-            color: #0066cc;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        .timestamp {
-            color: #666;
-            font-size: 0.8em;
-            margin-right: 8px;
-        }
-        #form { 
-            display: flex; 
-            gap: 10px;
-        }
-        #input { 
-            flex-grow: 1; 
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 20px;
-            background: #0084ff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        button:hover {
-            background: #0066cc;
-        }
-        #userCount, #myNickname {
-            margin-bottom: 10px;
-            padding: 8px;
-            background: #fff;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        #userCount {
-            color: #666;
-        }
-        #myNickname {
-            color: #0066cc;
-            font-weight: bold;
-        }
-        .users-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-            padding: 8px;
-            background: #fff;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        #userList {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        #userList li {
-            padding: 8px;
-            color: #0066cc;
-            background: #fff;
-            margin-bottom: 5px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        #userList li.current-user {
-            font-weight: bold;
-            background: #e6f3ff;
-        }
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        display: flex;
+        gap: 20px;
+      }
+      .main-content {
+        flex: 1;
+      }
+      .sidebar {
+        width: 200px;
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        padding: 10px;
+        border-radius: 8px;
+      }
+      #messages li {
+        padding: 8px 10px;
+        line-height: 1.4;
+        border-radius: 4px;
+        margin-bottom: 4px;
+      }
+      #messages li.my-message {
+        background: #f1f1f1;
+      }
+      .nickname {
+        color: #0066cc;
+        font-weight: bold;
+        margin-right: 8px;
+      }
+      .timestamp {
+        color: #666;
+        font-size: 0.8em;
+        margin-right: 8px;
+      }
+      #form {
+        display: flex;
+        gap: 10px;
+      }
+      #input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        padding: 10px 20px;
+        background: #0084ff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      button:hover {
+        background: #0066cc;
+      }
+      #userCount,
+      #myNickname {
+        margin-bottom: 10px;
+        padding: 8px;
+        background: #fff;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+      #userCount {
+        color: #666;
+      }
+      #myNickname {
+        color: #0066cc;
+        font-weight: bold;
+      }
+      .users-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+        padding: 8px;
+        background: #fff;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+      #userList {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      #userList li {
+        padding: 8px;
+        color: #0066cc;
+        background: #fff;
+        margin-bottom: 5px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+      #userList li.current-user {
+        font-weight: bold;
+        background: #e6f3ff;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="main-content">
-        <div id="userCount">접속자 수: 0</div>
-        <div id="myNickname">닉네임: 연결 중...</div>
-        <ul id="messages"></ul>
-        <form id="form">
-            <input id="input" autocomplete="off" placeholder="메시지를 입력하세요..." />
-            <button>보내기</button>
-        </form>
+      <div id="userCount">접속자 수: 0</div>
+      <div id="myNickname">닉네임: 연결 중...</div>
+      <ul id="messages"></ul>
+      <form id="form">
+        <input
+          id="input"
+          autocomplete="off"
+          placeholder="메시지를 입력하세요..."
+        />
+        <button>보내기</button>
+      </form>
     </div>
     <div class="sidebar">
-        <div class="users-title">접속 중인 사용자</div>
-        <ul id="userList"></ul>
+      <div class="users-title">접속 중인 사용자</div>
+      <ul id="userList"></ul>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
-        const form = document.getElementById('form');
-        const input = document.getElementById('input');
-        const messages = document.getElementById('messages');
-        const userCountDiv = document.getElementById('userCount');
-        const myNicknameDiv = document.getElementById('myNickname');
-        const userListUl = document.getElementById('userList');
-        let myNickname = '';
+      const socket = io();
+      const form = document.getElementById('form');
+      const input = document.getElementById('input');
+      const messages = document.getElementById('messages');
+      const userCountDiv = document.getElementById('userCount');
+      const myNicknameDiv = document.getElementById('myNickname');
+      const userListUl = document.getElementById('userList');
+      let myNickname = '';
 
-        socket.on('connect', () => {
-            console.log('Connected to server');
-        });
+      // 로컬 스토리지에서 userId 및 nickname 가져오기
+      let userId = localStorage.getItem('userId');
+      let nickname = localStorage.getItem('nickname');
 
-        socket.on('set nickname', (nickname) => {
-            console.log('Received nickname:', nickname);
-            myNickname = nickname;
-            myNicknameDiv.textContent = `닉네임: ${nickname}`;
-        });
+      if (!userId) {
+        userId = `${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+        localStorage.setItem('userId', userId);
+      }
 
-        socket.on('userList', (users) => {
-            console.log('Received user list:', users); // 디버깅용 로그
-            userListUl.innerHTML = '';
-            users.forEach(nickname => {
-                const li = document.createElement('li');
-                li.textContent = nickname;
-                if (nickname === myNickname) {
-                    li.classList.add('current-user');
-                }
-                userListUl.appendChild(li);
-            });
+      // 서버에 userId와 닉네임 전송
+      socket.on('connect', () => {
+        socket.emit('set userId', {
+          clientUserId: userId,
+          clientNickname: nickname,
         });
+      });
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (input.value) {
-                socket.emit('chat message', input.value);
-                input.value = '';
-            }
-        });
+      // 닉네임 설정
+      socket.on('set nickname', (receivedNickname) => {
+        myNickname = receivedNickname;
+        myNicknameDiv.textContent = `닉네임: ${myNickname}`;
+        if (!nickname) {
+          localStorage.setItem('nickname', myNickname);
+        }
+      });
 
-        socket.on('chat message', (data) => {
-            const li = document.createElement('li');
-            if (data.nickname === myNickname) {
-                li.classList.add('my-message');
-            }
-            
-            const nicknameSpan = document.createElement('span');
-            nicknameSpan.className = 'nickname';
-            nicknameSpan.textContent = data.nickname;
-            
-            const timestampSpan = document.createElement('span');
-            timestampSpan.className = 'timestamp';
-            timestampSpan.textContent = data.timestamp;
-            
-            const messageSpan = document.createElement('span');
-            messageSpan.textContent = data.message;
-            
-            li.appendChild(timestampSpan);
-            li.appendChild(nicknameSpan);
-            li.appendChild(messageSpan);
-            
-            messages.appendChild(li);
-            messages.scrollTop = messages.scrollHeight;
+      // 사용자 목록 업데이트
+      socket.on('userList', (users) => {
+        userListUl.innerHTML = '';
+        users.forEach((nickname) => {
+          const li = document.createElement('li');
+          li.textContent = nickname;
+          if (nickname === myNickname) {
+            li.classList.add('current-user');
+          }
+          userListUl.appendChild(li);
         });
+      });
 
-        socket.on('userCount', (count) => {
-            userCountDiv.textContent = `접속자 수: ${count}`;
-        });
+      // 채팅 메시지 전송
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('chat message', input.value);
+          input.value = '';
+        }
+      });
+
+      // 채팅 메시지 수신
+      socket.on('chat message', (data) => {
+        const li = document.createElement('li');
+        if (data.nickname === myNickname) {
+          li.classList.add('my-message');
+        }
+
+        const nicknameSpan = document.createElement('span');
+        nicknameSpan.className = 'nickname';
+        nicknameSpan.textContent = data.nickname;
+
+        const timestampSpan = document.createElement('span');
+        timestampSpan.className = 'timestamp';
+        timestampSpan.textContent = data.timestamp;
+
+        const messageSpan = document.createElement('span');
+        messageSpan.textContent = data.message;
+
+        li.appendChild(timestampSpan);
+        li.appendChild(nicknameSpan);
+        li.appendChild(messageSpan);
+
+        messages.appendChild(li);
+        messages.scrollTop = messages.scrollHeight;
+      });
+
+      // 접속자 수 업데이트
+      socket.on('userCount', (count) => {
+        userCountDiv.textContent = `접속자 수: ${count}`;
+      });
     </script>
-</body>
+  </body>
 </html>
