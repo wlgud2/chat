@@ -4,7 +4,23 @@
     <title>익명 채팅방</title>
     <meta charset="utf-8">
     <style>
-        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            font-family: Arial, sans-serif;
+            display: flex;
+            gap: 20px;
+        }
+        .main-content {
+            flex: 1;
+        }
+        .sidebar {
+            width: 200px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
         #messages { 
             list-style-type: none; 
             margin: 0; 
@@ -14,12 +30,17 @@
             border: 1px solid #ccc; 
             margin-bottom: 20px; 
             padding: 10px;
+            border-radius: 8px;
         }
         #messages li { 
             padding: 8px 10px; 
             line-height: 1.4;
+            border-radius: 4px;
+            margin-bottom: 4px;
         }
-        #messages li:nth-child(odd) { background: #f1f1f1; }
+        #messages li.my-message {
+            background: #f1f1f1;
+        }
         .nickname {
             color: #0066cc;
             font-weight: bold;
@@ -37,6 +58,8 @@
         #input { 
             flex-grow: 1; 
             padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         button {
             padding: 10px 20px;
@@ -44,26 +67,67 @@
             color: white;
             border: none;
             cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #0066cc;
+        }
+        #userCount, #myNickname {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #fff;
+            border-radius: 4px;
+            border: 1px solid #ddd;
         }
         #userCount {
-            margin-bottom: 10px;
             color: #666;
         }
         #myNickname {
-            margin-bottom: 10px;
             color: #0066cc;
             font-weight: bold;
+        }
+        .users-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+            padding: 8px;
+            background: #fff;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        #userList {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        #userList li {
+            padding: 8px;
+            color: #0066cc;
+            background: #fff;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        #userList li.current-user {
+            font-weight: bold;
+            background: #e6f3ff;
         }
     </style>
 </head>
 <body>
-    <div id="userCount">접속자 수: 0</div>
-    <div id="myNickname">닉네임: 연결 중...</div>
-    <ul id="messages"></ul>
-    <form id="form">
-        <input id="input" autocomplete="off" placeholder="메시지를 입력하세요..." />
-        <button>보내기</button>
-    </form>
+    <div class="main-content">
+        <div id="userCount">접속자 수: 0</div>
+        <div id="myNickname">닉네임: 연결 중...</div>
+        <ul id="messages"></ul>
+        <form id="form">
+            <input id="input" autocomplete="off" placeholder="메시지를 입력하세요..." />
+            <button>보내기</button>
+        </form>
+    </div>
+    <div class="sidebar">
+        <div class="users-title">접속 중인 사용자</div>
+        <ul id="userList"></ul>
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -73,9 +137,9 @@
         const messages = document.getElementById('messages');
         const userCountDiv = document.getElementById('userCount');
         const myNicknameDiv = document.getElementById('myNickname');
+        const userListUl = document.getElementById('userList');
         let myNickname = '';
 
-        // 소켓 연결 시 닉네임 설정
         socket.on('connect', () => {
             console.log('Connected to server');
         });
@@ -84,6 +148,19 @@
             console.log('Received nickname:', nickname);
             myNickname = nickname;
             myNicknameDiv.textContent = `닉네임: ${nickname}`;
+        });
+
+        socket.on('userList', (users) => {
+            console.log('Received user list:', users); // 디버깅용 로그
+            userListUl.innerHTML = '';
+            users.forEach(nickname => {
+                const li = document.createElement('li');
+                li.textContent = nickname;
+                if (nickname === myNickname) {
+                    li.classList.add('current-user');
+                }
+                userListUl.appendChild(li);
+            });
         });
 
         form.addEventListener('submit', (e) => {
@@ -96,6 +173,10 @@
 
         socket.on('chat message', (data) => {
             const li = document.createElement('li');
+            if (data.nickname === myNickname) {
+                li.classList.add('my-message');
+            }
+            
             const nicknameSpan = document.createElement('span');
             nicknameSpan.className = 'nickname';
             nicknameSpan.textContent = data.nickname;

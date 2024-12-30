@@ -5,13 +5,9 @@ const io = require('socket.io')(http);
 
 app.use(express.static('public'));
 
-// IP별 사용자 관리를 위한 Map
-const connectedIPs = new Map(); // IP -> {nickname: string}
+// 사용자 관리
+const connectedUsers = new Map(); // socketId -> {nickname: string}
 
-// 전체 유니크 접속자 수
-let uniqueUsers = 0;
-
-// 랜덤 닉네임 생성 함수
 function generateNickname() {
     const adjectives = ['행복한', '즐거운', '신나는', '귀여운', '멋진', '착한', '웃는', '똑똑한'];
     const nouns = ['고양이', '강아지', '토끼', '다람쥐', '판다', '코알라', '펭귄', '기린'];
@@ -20,49 +16,47 @@ function generateNickname() {
         nouns[Math.floor(Math.random() * nouns.length)]}${randomNum}`;
 }
 
+function updateUserList() {
+    const users = Array.from(connectedUsers.values()).map(user => user.nickname);
+    io.emit('userList', users);
+    io.emit('userCount', users.length);
+    console.log('Current users:', users); // 디버깅용 로그
+}
+
 io.on('connection', (socket) => {
-    const clientIP = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
-    let nickname;
-    
-    // IP별 첫 접속 처리
-    if (!connectedIPs.has(clientIP)) {
-        nickname = generateNickname();
-        connectedIPs.set(clientIP, { nickname });
-        uniqueUsers++;
-        io.emit('userCount', uniqueUsers);
-    } else {
-        // 같은 IP의 추가 접속 - 기존 닉네임 사용
-        nickname = connectedIPs.get(clientIP).nickname;
-    }
-    
-    // 클라이언트에게 닉네임 전송
-    socket.emit('set nickname', nickname);
-    
+    console.log('New connection:', socket.id);
+
+    // 새로운 사용자 생성 및 저장
+    const userInfo = {
+        nickname: generateNickname()
+    };
+    connectedUsers.set(socket.id, userInfo);
+
+    // 연결된 클라이언트에게 닉네임 전송
+    socket.emit('set nickname', userInfo.nickname);
+
+    // 사용자 목록 업데이트
+    updateUserList();
+
+    // 채팅 메시지 처리
     socket.on('chat message', (msg) => {
         const timestamp = new Date().toLocaleTimeString('ko-KR');
         io.emit('chat message', {
-            nickname: nickname,
+            nickname: userInfo.nickname,
             message: msg,
             timestamp: timestamp
         });
     });
-    
+
+    // 연결 해제 처리
     socket.on('disconnect', () => {
-        // 모든 소켓 연결을 확인하여 해당 IP의 다른 연결이 있는지 확인
-        const connectedSockets = Array.from(io.sockets.sockets.values());
-        const sameIPConnections = connectedSockets.filter(s => 
-            (s.handshake.headers['x-forwarded-for'] || s.handshake.address) === clientIP
-        );
-        
-        // 해당 IP의 마지막 연결이 끊어질 때만 처리
-        if (sameIPConnections.length === 0) {
-            connectedIPs.delete(clientIP);
-            uniqueUsers--;
-            io.emit('userCount', uniqueUsers);
-        }
+        console.log('Disconnection:', socket.id);
+        connectedUsers.delete(socket.id);
+        updateUserList();
     });
 });
 
+// 서버 시작 시 로그
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
